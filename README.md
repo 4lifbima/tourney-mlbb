@@ -211,7 +211,7 @@ This project is licensed under the MIT License.
 
 ## 👨‍💻 Author
 
-MLBB Tournament Team
+Alif Bima Pradana - Fullstack Developer & Mobile Developer
 
 ## 🙏 Acknowledgments
 
