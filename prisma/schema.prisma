@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TournamentStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  ONGOING
+  COMPLETED
+}
+
+enum TeamStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+}
+
+model Tournament {
+  id          String            @id @default(uuid())
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  slot        Int
+  prizePool   String?
+  status      TournamentStatus  @default(DRAFT)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  teams       Team[]
+}
+
+model Team {
+  id            String      @id @default(uuid())
+  teamName      String
+  captainName   String
+  email         String
+  phone         String
+  rankScreenshot String?
+  status        TeamStatus  @default(PENDING)
+  tournamentId  String
+  tournament    Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  members       Member[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([tournamentId])
+  @@index([status])
+}
+
+model Member {
+  id          String   @id @default(uuid())
+  name        String
+  inGameName  String
+  role        String?
+  teamId      String
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@index([teamId])
+}
+
+model Admin {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  name      String
+  role      AdminRole @default(ADMIN)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
